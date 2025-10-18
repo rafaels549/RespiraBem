@@ -11,8 +11,6 @@
     <option value="fibrose_pulmonar">Fibrose Pulmonar</option>
     <option value="apneia_sono">Apneia do Sono</option>
     <option value="outra">Outra</option>
-
-      
 </select>
 <button id="botao-salvar" onclick="salvarDoencaRespiratoria()">
          Salvar
