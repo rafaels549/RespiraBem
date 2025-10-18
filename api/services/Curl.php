@@ -1,7 +1,8 @@
 <?php
-namespace Rafael\RespiraBem\classes;
+namespace Rafael\RespiraBem\services;
+use Rafael\RespiraBem\interface\CurlInterface;
 
-class Curl
+class Curl 
 {
     public function makeCurl($url, $method = 'GET', $headers = [], $data = null)
     {
