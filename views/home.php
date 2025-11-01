@@ -164,47 +164,71 @@ tbody td:last-child {
   font-weight: bold;
 }
 
-/* ===== RESPONSIVIDADE ===== */
-@media (max-width: 900px) {
-  #container {
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-
-  #map, #qualidade, #qualidade-geral {
-    width: 90%;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
+#botao-trocar {
+  margin-top: 16px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #121212;
-    color: #ddd;
-  }
+#botao-trocar:hover {
+  background-color: #1565c0;
+  transform: translateY(-2px);
+}
 
-  header {
-    background: linear-gradient(90deg, #2e7d32, #4CAF50);
-  }
+#botao-trocar:focus {
+  outline: 3px solid rgba(25, 118, 210, 0.4);
+}
 
-  table, #qualidade, #qualidade-geral {
-    background: #1e1e1e;
-    color: #ddd;
-  }
+#botao-trocar:active {
+  transform: translateY(0);
+}
 
-  th {
-    background: #388e3c;
-  }
+/* ===== MENSAGEM DE RECOMENDAÇÃO ===== */
+#recomendacao-container {
+  margin-top: 25px;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  tbody tr:hover {
-    background: #2a2a2a;
-  }
+#recomendacao-mensagem {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  animation: fadeIn 0.4s ease;
+}
 
-  /* Container geral */
+#recomendacao-icone {
+  font-size: 1.4rem;
+}
+
+#recomendacao-mensagem.Boa { background-color: #43a047; }        
+#recomendacao-mensagem.Moderada { background-color: #fdd835; color: #333; }
+#recomendacao-mensagem.Ruim { background-color: #fb8c00; }
+#recomendacao-mensagem.MuitoRuim { background-color: #e53935; }
+#recomendacao-mensagem.Perigosa { background-color: #6a1b9a; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== FORMULÁRIOS ===== */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -215,7 +239,6 @@ tbody td:last-child {
   text-align: center;
 }
 
-/* Label */
 .form-label {
   margin-bottom: 10px;
   color: #333;
@@ -223,7 +246,6 @@ tbody td:last-child {
   font-weight: 500;
 }
 
-/* Select */
 .form-control {
   padding: 12px 14px;
   border-radius: 8px;
@@ -240,7 +262,6 @@ tbody td:last-child {
   outline: none;
 }
 
-/* Botão Salvar */
 #botao-salvar {
   margin-top: 20px;
   background-color: #1976d2;
@@ -265,44 +286,21 @@ tbody td:last-child {
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* Mensagem de recomendação */
-#recomendacao-container {
-  margin-top: 25px;
-  text-align: center;
-  transition: all 0.3s ease;
-}
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 900px) {
+  #container {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
 
-#recomendacao-mensagem {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  border-radius: 10px;
-  padding: 14px 20px;
-  font-size: 1rem;
-  color: #fff;
-  font-weight: 500;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-  animation: fadeIn 0.4s ease;
-}
+  #map, #qualidade, #qualidade-geral {
+    width: 90%;
+  }
 
-/* Ícone */
-#recomendacao-icone {
-  font-size: 1.4rem;
-}
-
-/* Estados de cor */
-#recomendacao-mensagem.Boa { background-color: #43a047; }        
-#recomendacao-mensagem.Moderada { background-color: #fdd835; color: #333; }
-#recomendacao-mensagem.Ruim { background-color: #fb8c00; }
-#recomendacao-mensagem.MuitoRuim { background-color: #e53935; }
-#recomendacao-mensagem.Perigosa { background-color: #6a1b9a; }
-
-.hidden { display: none; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+  h1 {
+    font-size: 1.5rem;
+  }
 }
   </style>
 </head>
@@ -314,12 +312,15 @@ tbody td:last-child {
         use Rafael\RespiraBem\services\ViewRender;
         echo ViewRender::renderComponent('__selectDoencaRespiratoria');
     ?>
-    <div id="recomendacao-container" class="hidden">
+<div id="recomendacao-container" class="hidden">
   <div id="recomendacao-mensagem">
-    <span id="recomendacao-icone">💨</span>
     <span id="recomendacao-texto"></span>
   </div>
+  <div>
+  <button  id="botao-trocar">Trocar doença respiratória</button>
+  </div>
 </div>
+ 
  <div id ="main-content">  
   <h1>Aqui está sua localização atual</h1>
 
@@ -359,11 +360,21 @@ tbody td:last-child {
       if(!localStorage.getItem('doenca_respiratoria')){
         document.getElementById('doenca_respiratoria_container').style.display = 'block';
        document.getElementById('main-content').style.display = 'none';
+       const recomendacaoContainer = document.getElementById('recomendacao-container');
+      recomendacaoContainer.style.display = 'none';
       } else {
         document.getElementById('doenca_respiratoria_container').style.display = 'none';
         carregarMapaELocalizacao();
       }
        
+    });
+
+    document.getElementById('botao-trocar').addEventListener('click', function() {
+      localStorage.removeItem('doenca_respiratoria');
+      document.getElementById('doenca_respiratoria_container').style.display = 'block';
+      document.getElementById('main-content').style.display = 'none';
+      const recomendacaoContainer = document.getElementById('recomendacao-container');
+      recomendacaoContainer.style.display = 'none';
     });
     function salvarDoencaRespiratoria() {
       document.getElementById('main-content').style.display = 'block';
@@ -372,6 +383,8 @@ tbody td:last-child {
       localStorage.setItem('doenca_respiratoria', selectedDisease);
       carregarMapaELocalizacao();
       document.getElementById('doenca_respiratoria_container').style.display = 'none';
+      const recomendacaoContainer = document.getElementById('recomendacao-container');
+      recomendacaoContainer.style.display = 'block';
     }
 
     // Adiciona os círculos de qualidade
@@ -536,7 +549,7 @@ function carregarMapaELocalizacao() {
             const recomendacaoMensagem = document.getElementById('recomendacao-mensagem');
             recomendacaoMensagem.textContent = recomendacao;
             recomendacaoMensagem.className = 'qualidade-item ' + qualidadeDoArCalculo.replace(/\s/g, '');
-            recomendacaoContainer.classList.remove('hidden');
+            recomendacaoContainer.style.display = 'block';
             
           }
         })
