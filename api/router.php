@@ -6,9 +6,8 @@ use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
 use Rafael\RespiraBem\services\ViewRender;
 use Rafael\RespiraBem\services\Pollution;
-
-use Rafael\RespiraBem\services\Curl;
 use Dotenv\Dotenv;
+use Rafael\RespiraBem\services\HttpClient;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -45,7 +44,7 @@ $app->get('/get_pollutitions', function (ServerRequestInterface $request, Respon
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 
-    $pollution = new Pollution(new Curl() , $_ENV['API_KEY']);
+    $pollution = new Pollution(new HttpClient() , $_ENV['API_KEY']);
     $result = $pollution->getPollutionData($lat, $lon);
 
     if (!$result['success']) {

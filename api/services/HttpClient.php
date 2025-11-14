@@ -1,10 +1,10 @@
 <?php
 namespace Rafael\RespiraBem\services;
-use Rafael\RespiraBem\interface\CurlInterface;
 
-class Curl 
+
+class HttpClient
 {
-    public function makeCurl($url, $method = 'GET', $headers = [], $data = null)
+    public function makeRequest($url, $method = 'GET', $headers = [], $data = null)
     {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

@@ -647,38 +647,25 @@ function carregarMapaELocalizacao() {
 
 function getRecomendacao(doenca, qualidade) {
   const mensagens = {
-    asma: {
-      Boa: "O ar está limpo. Aproveite para praticar atividades ao ar livre com tranquilidade.",
-      Moderada: "Atenção! Mantenha sua medicação por perto e evite esforço físico intenso.",
-      Ruim: "Evite atividades ao ar livre por longos períodos e mantenha os ambientes bem ventilados.",
-      "Muito Ruim": "Procure permanecer em locais fechados e use máscara se precisar sair.",
-      Perigosa: "Risco alto! Evite completamente sair de casa e mantenha contato com seu médico."
+    geral: {
+      Boa: "A qualidade do ar é considerada satisfatória, atividades ao ar livre podem ser realizadas normalmente.",
+      Moderada: "A qualidade do ar é considerada moderada, atividades ao ar livre podem ser realizadas normalmente.",
+      Ruim: "A qualidade do ar é considerada ruim. Atividades físicas intensas ao ar livre devem ser evitadas, e atividades leves podem ser realizadas, mas deve-se ficar atento ao surgimento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta.",
+      MuitoRuim: "A qualidade do ar é considerada muito ruim. Atividades físicas ao ar livre devem ser evitadas, e sempre que possível permaneça em ambientes fechados. Fique atento a sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de falta de ar ou respiração ofegante. Utilize máscaras com filtro quando estiver em contato com o ambiente externo.",
+      Perigosa: "A qualidade do ar é considerada péssima. É fortemente recomendado evitar qualquer exposição ao ar livre. Mantenha portas e janelas fechadas, utilize purificadores de ar se possível e fique atento ao agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de falta de ar ou respiração ofegante. Procure atendimento médico em caso de piora. O uso de máscaras com filtro é indicado sempre que estiver em contato com o ambiente externo."
     },
-    bronquite: {
-      Boa: "A qualidade do ar está boa. Respire fundo e aproveite o dia.",
-      Moderada: "Evite fumaça e locais com muito trânsito. Hidrate-se bem.",
-      Ruim: "Limite o tempo ao ar livre e mantenha seus inaladores por perto.",
-      "Muito Ruim": "Procure locais fechados e sem poluição. Aumente a hidratação.",
-      Perigosa: "Evite totalmente sair. Use purificador de ar se possível e contate seu médico."
-    },
-    dpoc: {
-      Boa: "Excelente qualidade do ar. Caminhadas leves são bem-vindas.",
-      Moderada: "Evite exposição prolongada. Use máscara se estiver em locais poluídos.",
-      Ruim: "Evite atividades físicas e locais abertos. Prefira ambientes limpos e fechados.",
-      "Muito Ruim": "Permaneça em ambientes fechados e use seus medicamentos corretamente.",
-      Perigosa: "Situação crítica. Evite sair e monitore os sintomas de perto."
-    },
-    rinite: {
-      Boa: "Pouca presença de irritantes no ar. Alergias devem estar sob controle.",
-      Moderada: "Mantenha janelas fechadas e evite exposição prolongada à rua.",
-      Ruim: "Evite locais com muita poeira. Use máscara e lave o rosto ao chegar em casa.",
-      "Muito Ruim": "Procure não sair e use antialérgicos conforme orientação médica.",
-      Perigosa: "Alerta! Evite totalmente exposição externa e busque orientação médica se os sintomas piorarem."
+    grupo_risco: {
+      Boa: "A qualidade do ar é considerada satisfatória, atividades ao ar livre podem ser realizadas normalmente.",
+      Moderada: "A qualidade do ar é moderada. Recomenda-se reduzir o esforço físico intenso ao ar livre. Pessoas sensíveis podem apresentar sintomas leves, como tosse e cansaço.",
+      Ruim: "A qualidade do ar é considerada ruim. Recomenda-se evitar qualquer esforço físico ao ar livre e priorizar a permanência em ambientes fechados. Utilize máscaras com filtro em áreas altamente poluídas.",
+      MuitoRuim: "A qualidade do ar é considerada muito ruim. Recomenda-se evitar qualquer exposição ao ar livre e permanecer em ambientes fechados. Fique atento ao agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, bem como episódios de falta de ar ou respiração ofegante. Em caso de piora, procure atendimento médico. Utilize máscaras com filtro quando estiver em contato com o ambiente externo.",
+      Perigosa: "A qualidade do ar é considerada péssima. Evite totalmente a exposição ao ar livre. Mantenha portas e janelas fechadas, utilize purificadores de ar, e observe o agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de falta de ar ou respiração ofegante. Procure atendimento médico em caso de piora. O uso de máscaras com filtro é indicado sempre que estiver em contato com o ambiente externo."
     }
   };
 
-  if (!mensagens[doenca]) return "Selecione uma doença para receber recomendações.";
-  return mensagens[doenca][qualidade] || "Sem recomendação disponível.";
+  const tipo = (doenca === "Nenhuma" || doenca === null) ? "geral" : "grupo_risco";
+  
+  return mensagens[tipo][qualidade];
 }
 function generateCircleSVG(qualidadeAqiAr) {
       const item = document.createElement('div');

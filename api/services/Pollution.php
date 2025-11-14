@@ -2,20 +2,20 @@
 
 namespace Rafael\RespiraBem\services;
 
-use Rafael\RespiraBem\services\Curl;
+use Rafael\RespiraBem\services\HttpClient;
 
 class Pollution
 {
-    public $curl;
+    public $httpClient;
     private $apiKey;
 
-    public function __construct(Curl $curl, $apiKey)
+    public function __construct(HttpClient $httpClient,$apiKey)
     {
-        $this->curl = $curl;
+        $this->httpClient = $httpClient;
         $this->apiKey = $apiKey;
     }
 
     public function getPollutionData(float $lat, float $lon): array {
-        return $this->curl->makeCurl("http://api.openweathermap.org/data/2.5/air_pollution?lat=$lat&lon=$lon&appid=" . $this->apiKey);
+        return $this->httpClient->makeRequest("http://api.openweathermap.org/data/2.5/air_pollution?lat=$lat&lon=$lon&appid=" . $this->apiKey);
     }
 }
