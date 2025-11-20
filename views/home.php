@@ -542,7 +542,7 @@ function carregarMapaELocalizacao() {
           console.error('Erro ao buscar poluentes:', error);
         });
     }, function(error) {
-      alert('Não foi possível obter sua localização: ' + error.message);
+      alert('Não foi possível obter sua localização sem localização não é possível mostrar os dados de qualidade do ar.');
     });
   }
 
@@ -617,22 +617,21 @@ function carregarMapaELocalizacao() {
         default: return "Desconhecida";
       }
     }
-
 function getRecomendacao(doenca, qualidade) {
   const mensagens = {
     geral: {
       Boa: "A qualidade do ar é considerada satisfatória, atividades ao ar livre podem ser realizadas normalmente.",
       Moderada: "A qualidade do ar é considerada moderada, atividades ao ar livre podem ser realizadas normalmente.",
-      Ruim: "A qualidade do ar é considerada ruim. Atividades físicas intensas ao ar livre devem ser evitadas, e atividades leves podem ser realizadas, mas deve-se ficar atento ao surgimento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta.",
-      MuitoRuim: "A qualidade do ar é considerada muito ruim. Atividades físicas ao ar livre devem ser evitadas, e sempre que possível permaneça em ambientes fechados. Fique atento a sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de falta de ar ou respiração ofegante. Utilize máscaras com filtro quando estiver em contato com o ambiente externo.",
-      Perigosa: "A qualidade do ar é considerada péssima. É fortemente recomendado evitar qualquer exposição ao ar livre. Mantenha portas e janelas fechadas, utilize purificadores de ar se possível e fique atento ao agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de falta de ar ou respiração ofegante. Procure atendimento médico em caso de piora. O uso de máscaras com filtro é indicado sempre que estiver em contato com o ambiente externo."
+      Ruim: "A qualidade do ar é considerada ruim, atividades físicas intensas ao ar livre devem ser evitadas e atividades leves podem ser realizadas, mas deve-se ficar atento ao surgimento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta.",
+      MuitoRuim: "A qualidade do ar é considerada muito ruim, atividades físicas ao ar livre devem ser evitadas, e sempre que possível permaneça em ambientes fechados. É importante ficar atento ao surgimento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além da ocorrência de falta de ar ou respiração ofegante. Utilize máscaras com filtro quando estiver em contato com o ambiente externo.",
+      Perigosa: "A qualidade do ar é considerada péssima, sendo fortemente recomendado evitar qualquer exposição ao ar livre. Mantenha portas e janelas fechadas para reduzir a entrada de ar poluído e, se possível, utilize purificadores de ar. É importante observar o agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de episódios de falta de ar ou respiração ofegante. Em caso de piora é indicado procurar atendimento médico. O uso de máscaras com filtro é indicado sempre que estiver em contato com o ambiente externo."
     },
     grupo_risco: {
       Boa: "A qualidade do ar é considerada satisfatória, atividades ao ar livre podem ser realizadas normalmente.",
       Moderada: "A qualidade do ar é moderada. Recomenda-se reduzir o esforço físico intenso ao ar livre. Pessoas sensíveis podem apresentar sintomas leves, como tosse e cansaço.",
-      Ruim: "A qualidade do ar é considerada ruim. Recomenda-se evitar qualquer esforço físico ao ar livre e priorizar a permanência em ambientes fechados. Utilize máscaras com filtro em áreas altamente poluídas.",
-      MuitoRuim: "A qualidade do ar é considerada muito ruim. Recomenda-se evitar qualquer exposição ao ar livre e permanecer em ambientes fechados. Fique atento ao agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, bem como episódios de falta de ar ou respiração ofegante. Em caso de piora, procure atendimento médico. Utilize máscaras com filtro quando estiver em contato com o ambiente externo.",
-      Perigosa: "A qualidade do ar é considerada péssima. Evite totalmente a exposição ao ar livre. Mantenha portas e janelas fechadas, utilize purificadores de ar, e observe o agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de falta de ar ou respiração ofegante. Procure atendimento médico em caso de piora. O uso de máscaras com filtro é indicado sempre que estiver em contato com o ambiente externo."
+      Ruim: "A qualidade do ar é considerada ruim, recomenda-se evitar qualquer esforço físico ao ar livre e priorizar a permanência em ambientes fechados. Utilize máscaras com filtro em áreas altamente poluídas.",
+      MuitoRuim: "A qualidade do ar é considerada muito ruim, recomenda-se evitar qualquer exposição ao ar livre e permanecer em ambientes fechados. Deve-se ficar atento ao agravamento de sintomas como como tosse seca, cansaço, ardor nos olhos, nariz e garganta, bem como episódios de falta de ar ou respiração ofegante. Em caso de piora é indicado procurar atendimento médico. Utilize máscaras com filtro quando estiver em contato com o ambiente externo.",
+      Perigosa: "A qualidade do ar é considerada péssima, sendo fortemente recomendado evitar qualquer exposição ao ar livre. Mantenha portas e janelas fechadas para reduzir a entrada de ar poluído e, se possível, utilize purificadores de ar. É importante observar o agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de episódios de falta de ar ou respiração ofegante. Em caso de piora é indicado procurar atendimento médico. O uso de máscaras com filtro é indicado sempre que estiver em contato com o ambiente externo."
     }
   };
 
