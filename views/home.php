@@ -610,8 +610,8 @@ function carregarMapaELocalizacao() {
     function getQualidadeDoAPI(aqi) {
       switch (aqi) {
         case 1: return "Boa";
-        case 2: return "Moderada";
-        case 3: return "Ruim";
+        case 2: return "Razoável";
+        case 3: return "Moderada";
         case 4: return "Muito Ruim";
         case 5: return "Perigosa";
         default: return "Desconhecida";
