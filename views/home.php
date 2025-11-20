@@ -401,72 +401,55 @@ tbody td:last-child {
       document.getElementById('qualidade').appendChild(item);
     });
 
-    // --- Tabelas para cálculo do IQAr ---
-    const tabelas = {
-      pm2_5: [
-        { C0: 0, C1: 12, I0: 0, I1: 50 },
-        { C0: 12.1, C1: 35.4, I0: 51, I1: 100 },
-        { C0: 35.5, C1: 55.4, I0: 101, I1: 150 },
-        { C0: 55.5, C1: 150.4, I0: 151, I1: 200 },
-        { C0: 150.5, C1: 250.4, I0: 201, I1: 300 },
-        { C0: 250.5, C1: 500.4, I0: 301, I1: 500 }
-      ],
-      pm10: [
-        { C0: 0, C1: 54, I0: 0, I1: 50 },
-        { C0: 55, C1: 154, I0: 51, I1: 100 },
-        { C0: 155, C1: 254, I0: 101, I1: 150 },
-        { C0: 255, C1: 354, I0: 151, I1: 200 },
-        { C0: 355, C1: 424, I0: 201, I1: 300 },
-        { C0: 425, C1: 604, I0: 301, I1: 500 }
-      ],
-      o3: [
-        { C0: 0, C1: 54, I0: 0, I1: 50 },
-        { C0: 55, C1: 70, I0: 51, I1: 100 },
-        { C0: 71, C1: 85, I0: 101, I1: 150 },
-        { C0: 86, C1: 105, I0: 151, I1: 200 },
-        { C0: 106, C1: 200, I0: 201, I1: 300 }
-      ],
-      no2: [
-        { C0: 0, C1: 53, I0: 0, I1: 50 },
-        { C0: 54, C1: 100, I0: 51, I1: 100 },
-        { C0: 101, C1: 360, I0: 101, I1: 150 },
-        { C0: 361, C1: 649, I0: 151, I1: 200 },
-        { C0: 650, C1: 1249, I0: 201, I1: 300 },
-        { C0: 1250, C1: 2049, I0: 301, I1: 500 }
-      ],
-      so2: [
-        { C0: 0, C1: 35, I0: 0, I1: 50 },
-        { C0: 36, C1: 75, I0: 51, I1: 100 },
-        { C0: 76, C1: 185, I0: 101, I1: 150 },
-        { C0: 186, C1: 304, I0: 151, I1: 200 },
-        { C0: 305, C1: 604, I0: 201, I1: 300 },
-        { C0: 605, C1: 1004, I0: 301, I1: 500 }
-      ],
-      co: [
-        { C0: 0, C1: 4.4, I0: 0, I1: 50 },
-        { C0: 4.5, C1: 9.4, I0: 51, I1: 100 },
-        { C0: 9.5, C1: 12.4, I0: 101, I1: 150 },
-        { C0: 12.5, C1: 15.4, I0: 151, I1: 200 },
-        { C0: 15.5, C1: 30.4, I0: 201, I1: 300 },
-        { C0: 30.5, C1: 50.4, I0: 301, I1: 500 }
-      ],
-        nh3: [
-    { C0: 0, C1: 50, I0: 0, I1: 50 },       // Boa
-    { C0: 51, C1: 100, I0: 51, I1: 100 },   // Moderada
-    { C0: 101, C1: 200, I0: 101, I1: 150 }, // Ruim
-    { C0: 201, C1: 400, I0: 151, I1: 200 }, // Muito Ruim
-    { C0: 401, C1: 1000, I0: 201, I1: 500 } // Perigosa
+  const tabelas = {
+  pm10: [
+    { C0: 0,   C1: 45,   I0: 0,   I1: 40 },   
+    { C0: 45,  C1: 100,  I0: 41,  I1: 80 },   
+    { C0: 100, C1: 150,  I0: 81,  I1: 120 },  
+    { C0: 150, C1: 250,  I0: 121, I1: 200 },  
+    { C0: 250, C1: 600,  I0: 201, I1: 400 },  
   ],
 
-  no: [
-    { C0: 0, C1: 50, I0: 0, I1: 50 },       // Boa
-    { C0: 51, C1: 100, I0: 51, I1: 100 },   // Moderada
-    { C0: 101, C1: 200, I0: 101, I1: 150 }, // Ruim
-    { C0: 201, C1: 400, I0: 151, I1: 200 }, // Muito Ruim
-    { C0: 401, C1: 1000, I0: 201, I1: 500 } // Perigosa
-  ]
-    };
+  pm2_5: [
+    { C0: 0,   C1: 15,   I0: 0,   I1: 40 },   
+    { C0: 15,  C1: 50,   I0: 41,  I1: 80 },   
+    { C0: 50,  C1: 75,   I0: 81,  I1: 120 },  
+    { C0: 75,  C1: 125,  I0: 121, I1: 200 },  
+    { C0: 125, C1: 300,  I0: 201, I1: 400 },  
+  ],
 
+  o3: [
+    { C0: 0,    C1: 100,  I0: 0,   I1: 40 },   
+    { C0: 100,  C1: 130,  I0: 41,  I1: 80 },   
+    { C0: 130,  C1: 160,  I0: 81,  I1: 120 },  
+    { C0: 160,  C1: 200,  I0: 121, I1: 200 },  
+    { C0: 200,  C1: 800,  I0: 201, I1: 400 },  
+  ],
+
+  co: [
+    { C0: 0,  C1: 9,   I0: 0,   I1: 40 },   
+    { C0: 9,  C1: 11,  I0: 41,  I1: 80 },   
+    { C0: 11, C1: 13,  I0: 81,  I1: 120 },  
+    { C0: 13, C1: 15,  I0: 121, I1: 200 },  
+    { C0: 15, C1: 50,  I0: 201, I1: 400 },  
+  ],
+
+  no2: [
+    { C0: 0,    C1: 200,   I0: 0,   I1: 40 },   
+    { C0: 200,  C1: 240,   I0: 41,  I1: 80 },   
+    { C0: 240,  C1: 320,   I0: 81,  I1: 120 },  
+    { C0: 320,  C1: 1130,  I0: 121, I1: 200 },  
+    { C0: 1130, C1: 3750,  I0: 201, I1: 400 },  
+  ],
+
+  so2: [
+    { C0: 0,    C1: 40,    I0: 0,   I1: 40 },   
+    { C0: 40,   C1: 50,    I0: 41,  I1: 80 },   
+    { C0: 50,   C1: 125,   I0: 81,  I1: 120 },  
+    { C0: 125,  C1: 800,   I0: 121, I1: 200 },  
+    { C0: 800,  C1: 2620,  I0: 201, I1: 400 },  
+  ]
+};
     function calcularIndice(poluente, C) {
       const faixas = tabelas[poluente];
       if (!faixas) return null;
@@ -523,6 +506,8 @@ function carregarMapaELocalizacao() {
 
           const tbody = document.getElementById('tabela-poluentes');
           matrizPoluentes.forEach(item => {
+            if(item.poluente === 'NH3' || item.poluente === 'NO') return;
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
               <td>${item.poluente}</td>
@@ -601,18 +586,6 @@ function carregarMapaELocalizacao() {
           if (valor <= 15.4) return "Muito Ruim";
           return "Perigosa";
         default:
-         case 'nh3':  
-      if (valor <= 50) return "Boa";
-      if (valor <= 100) return "Moderada";
-      if (valor <= 200) return "Ruim";
-      if (valor <= 400) return "Muito Ruim";
-      return "Perigosa";
-    case 'no':  
-      if (valor <= 50) return "Boa";
-      if (valor <= 100) return "Moderada";
-      if (valor <= 200) return "Ruim";
-      if (valor <= 400) return "Muito Ruim";
-      return "Perigosa"; 
           return "Desconhecida";
       }
     }
