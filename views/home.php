@@ -317,7 +317,7 @@ tbody td:last-child {
     <span id="recomendacao-texto"></span>
   </div>
   <div>
-  <button  id="botao-trocar">Trocar doença respiratória</button>
+  <button  id="botao-trocar">Trocar grupo que pertence</button>
   </div>
 </div>
  
