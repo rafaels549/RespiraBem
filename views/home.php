@@ -517,7 +517,7 @@ function carregarMapaELocalizacao() {
             tbody.appendChild(tr);
           });
 
-          
+          console.log(components)
           const iqAr = calcularIQAr(components);
                
           const qualidadeDoArCalculo = getQualidadeDoAr(iqAr);
@@ -579,12 +579,12 @@ function carregarMapaELocalizacao() {
           if (valor <= 185) return "Ruim";
           if (valor <= 304) return "Muito Ruim";
           return "Perigosa";
-        case 'co':
-          if (valor <= 4.4) return "Boa";
-          if (valor <= 9.4) return "Moderada";
-          if (valor <= 12.4) return "Ruim";
-          if (valor <= 15.4) return "Muito Ruim";
-          return "Perigosa";
+      case 'co':
+        if (valor <= 5038) return "Boa";
+        if (valor <= 10763) return "Moderada";
+        if (valor <= 14198) return "Ruim";
+        if (valor <= 17633) return "Muito Ruim";
+        return "Perigosa";
         default:
           return "Desconhecida";
       }
