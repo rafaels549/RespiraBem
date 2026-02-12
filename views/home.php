@@ -528,7 +528,11 @@ function carregarMapaELocalizacao() {
           console.log('IQAr (API):', apiAQI, getQualidadeDoAPI(apiAQI));
           if(localStorage.getItem('doenca_respiratoria')){
             const doencaSelecionada = localStorage.getItem('doenca_respiratoria');
+            if(qualidadeDoArCalculo === "Muito Ruim"){
+              qualidadeDoArCalculo = "MuitoRuim";
+            }
             const recomendacao = getRecomendacao(doencaSelecionada, qualidadeDoArCalculo);
+
 
             const recomendacaoContainer = document.getElementById('recomendacao-container');
             const recomendacaoMensagem = document.getElementById('recomendacao-mensagem');
@@ -622,7 +626,7 @@ function getRecomendacao(doenca, qualidade) {
     geral: {
       Boa: "A qualidade do ar é considerada satisfatória, atividades ao ar livre podem ser realizadas normalmente.",
       Moderada: "A qualidade do ar é considerada moderada, atividades ao ar livre podem ser realizadas normalmente.",
-      Ruim: "A qualidade do ar é considerada ruim, atividades físicas intensas ao ar livre devem ser evitadas e atividades leves podem ser realizadas, mas deve-se ficar atento ao surgimento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta.",
+      Ruim: "A qualidade do ar é considerada ruim, atividades físicas intensas ao ar ligetvre devem ser evitadas e atividades leves podem ser realizadas, mas deve-se ficar atento ao surgimento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta.",
       MuitoRuim: "A qualidade do ar é considerada muito ruim, atividades físicas ao ar livre devem ser evitadas, e sempre que possível permaneça em ambientes fechados. É importante ficar atento ao surgimento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além da ocorrência de falta de ar ou respiração ofegante. Utilize máscaras com filtro quando estiver em contato com o ambiente externo.",
       Perigosa: "A qualidade do ar é considerada péssima, sendo fortemente recomendado evitar qualquer exposição ao ar livre. Mantenha portas e janelas fechadas para reduzir a entrada de ar poluído e, se possível, utilize purificadores de ar. É importante observar o agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de episódios de falta de ar ou respiração ofegante. Em caso de piora é indicado procurar atendimento médico. O uso de máscaras com filtro é indicado sempre que estiver em contato com o ambiente externo."
     },
