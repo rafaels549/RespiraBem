@@ -467,7 +467,7 @@ tbody td:last-child {
         if (tabelas[poluente]) {
            let valor = components[poluente];
       if (poluente === 'co') {
-        valor = Math.round(valor * 10) / 10; 
+        valor =(Math.round(valor * 10) / 10) / 1145; 
       } else {
         valor = Math.round(valor); 
       }
@@ -562,10 +562,10 @@ function carregarMapaELocalizacao() {
           if (valor <= 354) return "Muito Ruim";
           return "Perigosa";
         case 'o3':
-          if (valor <= 54) return "Boa";
-          if (valor <= 70) return "Moderada";
-          if (valor <= 85) return "Ruim";
-          if (valor <= 105) return "Muito Ruim";
+          if (valor <= 100) return "Boa";
+          if (valor <= 130) return "Moderada";
+          if (valor <= 160) return "Ruim";
+          if (valor <= 200) return "Muito Ruim";
           return "Perigosa";
         case 'no2':
           if (valor <= 53) return "Boa";
