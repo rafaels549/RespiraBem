@@ -345,7 +345,7 @@ tbody td:last-child {
       <thead>
         <tr>
           <th>Poluente</th>
-          <th>Valor (µg/m³)</th>
+          <th>Valor</th>
           <th>Qualidade</th>
         </tr>
       </thead>
@@ -355,7 +355,7 @@ tbody td:last-child {
   </div> 
 
   <script>
-
+  let indices = [];
     document.addEventListener('DOMContentLoaded', function() {
       if(!localStorage.getItem('doenca_respiratoria')){
         document.getElementById('doenca_respiratoria_container').style.display = 'block';
@@ -458,11 +458,12 @@ tbody td:last-child {
           return ((faixa.I1 - faixa.I0) / (faixa.C1 - faixa.C0)) * (C - faixa.C0) + faixa.I0;
         }
       }
+    
       return null;
     }
 
     function calcularIQAr(components) {
-      let indices = [];
+      
       for (let poluente in components) {
         if (tabelas[poluente]) {
            let valor = components[poluente];
@@ -475,6 +476,7 @@ tbody td:last-child {
           if (indice !== null) indices.push(indice);
         }
       }
+
       return Math.max(...indices);
     }
 function carregarMapaELocalizacao() {
@@ -496,11 +498,22 @@ function carregarMapaELocalizacao() {
           const components = data.data.list[0].components;
           const apiAQI = data.data.list[0].main.aqi;
 
+
           const matrizPoluentes = Object.entries(components).map(([poluente, valor]) => {
+            let unidade = 'µg/m³';
+            if(poluente === 'co') {
+              valor = (Math.round(valor * 10) / 10) / 1145;
+              unidade = 'ppm';
+            } else {
+              valor = Math.round(valor);
+            }
+
+            const indice = calcularIndice(poluente, valor);
             return {
               poluente: poluente.toUpperCase().replace('_', '.'),
-              valor: valor,
-              qualidade: getQualidadePoluente(poluente, valor)
+              valor: indice,
+              qualidade: getQualidadePoluente(poluente, indice),
+              unidade: unidade
             };
           });
 
@@ -511,21 +524,19 @@ function carregarMapaELocalizacao() {
             const tr = document.createElement('tr');
             tr.innerHTML = `
               <td>${item.poluente}</td>
-              <td>${item.valor.toFixed(2)}</td>
+              <td>${item.valor.toFixed(2)} ${item.unidade}</td>
               <td style="color: ${getColor(item.qualidade)}">${item.qualidade}</td>
             `;
             tbody.appendChild(tr);
           });
 
-          console.log(components)
+          
           const iqAr = calcularIQAr(components);
                
           const qualidadeDoArCalculo = getQualidadeDoAr(iqAr);
 
           generateCircleSVG(qualidadeDoArCalculo);
            
-          console.log('IQAr (cálculo):', iqAr, qualidadeDoArCalculo);
-          console.log('IQAr (API):', apiAQI, getQualidadeDoAPI(apiAQI));
           if(localStorage.getItem('doenca_respiratoria')){
             const doencaSelecionada = localStorage.getItem('doenca_respiratoria');
             if(qualidadeDoArCalculo === "Muito Ruim"){
@@ -552,53 +563,54 @@ function carregarMapaELocalizacao() {
 
     // Classificação simplificada
     function getQualidadePoluente(poluente, valor) {
+
       switch (poluente) {
         case 'pm2_5':
-          if (valor <= 12) return "Boa";
-          if (valor <= 35.4) return "Moderada";
-          if (valor <= 55.4) return "Ruim";
-          if (valor <= 150.4) return "Muito Ruim";
-          return "Perigosa";
+          if (valor <= 15) return "Boa";
+          if (valor <= 50) return "Moderada";
+          if (valor <= 75) return "Ruim";
+          if (valor <= 125) return "Muito Ruim";
+          return "Péssima";
         case 'pm10':
           if (valor <= 54) return "Boa";
           if (valor <= 154) return "Moderada";
           if (valor <= 254) return "Ruim";
           if (valor <= 354) return "Muito Ruim";
-          return "Perigosa";
+          return "Péssima";
         case 'o3':
           if (valor <= 100) return "Boa";
           if (valor <= 130) return "Moderada";
           if (valor <= 160) return "Ruim";
           if (valor <= 200) return "Muito Ruim";
-          return "Perigosa";
+          return "Péssima";
         case 'no2':
           if (valor <= 53) return "Boa";
           if (valor <= 100) return "Moderada";
           if (valor <= 360) return "Ruim";
           if (valor <= 649) return "Muito Ruim";
-          return "Perigosa";
+          return "Péssima";
         case 'so2':
           if (valor <= 35) return "Boa";
           if (valor <= 75) return "Moderada";
           if (valor <= 185) return "Ruim";
           if (valor <= 304) return "Muito Ruim";
-          return "Perigosa";
+          return "Péssima";
       case 'co':
-        if (valor <= 5038) return "Boa";
-        if (valor <= 10763) return "Moderada";
-        if (valor <= 14198) return "Ruim";
-        if (valor <= 17633) return "Muito Ruim";
-        return "Perigosa";
+        if (valor <= 9) return "Boa";
+        if (valor <= 11) return "Moderada";
+        if (valor <= 13) return "Ruim";
+        if (valor <= 15) return "Muito Ruim";
+        return "Péssima";
         default:
           return "Desconhecida";
       }
     }
      function getQualidadeDoAr(iqAr) {
-      if (iqAr <= 50) return "Boa";
-      if (iqAr <= 100) return "Moderada";
-      if (iqAr <= 150) return "Ruim";
-      if (iqAr <= 200) return "Muito Ruim";
-      return "Perigosa";
+     if (iqAr <= 40) return "Boa";
+     if (iqAr <= 80) return "Moderada";
+     if (iqAr <= 120) return "Ruim";
+     if (iqAr <= 200) return "Muito Ruim";
+  return "Péssima";
     }
     function getColor(qualidade) {
       switch (qualidade) {
