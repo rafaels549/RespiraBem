@@ -11,6 +11,14 @@ use Rafael\RespiraBem\services\HttpClient;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$path = __DIR__ . '/..' . $uri;
+
+// Se o arquivo existir (ex: /assets/js/aqi-utils.js), deixa o servidor embutido servir.
+if ($uri !== '/' && is_file($path)) {
+    return false;
+}
+
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 

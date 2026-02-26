@@ -103,7 +103,7 @@ h2 {
 .Moderada { background-color: #fdd835; }
 .Ruim { background-color: #fb8c00; }
 .MuitoRuim { background-color: #e53935; }
-.Perigosa { background-color: #6a1b9a; }
+.Péssima { background-color: #6a1b9a; }
 
 /* ===== MAPA ===== */
 #map {
@@ -221,7 +221,7 @@ tbody td:last-child {
 #recomendacao-mensagem.Moderada { background-color: #fdd835; color: #333; }
 #recomendacao-mensagem.Ruim { background-color: #fb8c00; }
 #recomendacao-mensagem.MuitoRuim { background-color: #e53935; }
-#recomendacao-mensagem.Perigosa { background-color: #6a1b9a; }
+#recomendacao-mensagem.Péssima { background-color: #6a1b9a; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-8px); }
@@ -352,10 +352,12 @@ tbody td:last-child {
       <tbody id="tabela-poluentes"></tbody>
     </table>
   </div>
-  </div> 
+  </div>
+  
+  <script src="/assets/js/aqi-utils.js"></script>
 
   <script>
-  let indices = [];
+  
     document.addEventListener('DOMContentLoaded', function() {
       if(!localStorage.getItem('doenca_respiratoria')){
         document.getElementById('doenca_respiratoria_container').style.display = 'block';
@@ -388,7 +390,7 @@ tbody td:last-child {
     }
 
     // Adiciona os círculos de qualidade
-    const arrayDeQualidade = ["Boa", "Moderada", "Ruim", "Muito Ruim", "Perigosa"];
+    const arrayDeQualidade = ["Boa", "Moderada", "Ruim", "Muito Ruim", "Péssima"];
     arrayDeQualidade.forEach(function(qualidade) {
       const item = document.createElement('div');
       item.className = 'qualidade-item';
@@ -463,15 +465,14 @@ tbody td:last-child {
     }
 
     function calcularIQAr(components) {
+      const indices = [];
       
       for (let poluente in components) {
         if (tabelas[poluente]) {
            let valor = components[poluente];
-      if (poluente === 'co') {
-        valor =(Math.round(valor * 10) / 10) / 1145; 
-      } else {
-        valor = Math.round(valor); 
-      }
+          const normalizado = normalizarValorParaCalculo(poluente, valor);
+          valor = normalizado.valor;
+
           const indice = calcularIndice(poluente, valor);
           if (indice !== null) indices.push(indice);
         }
@@ -479,18 +480,28 @@ tbody td:last-child {
 
       return Math.max(...indices);
     }
+
+    let mapInstance = null;
+
 function carregarMapaELocalizacao() {
     // --- Mapa + API ---
     navigator.geolocation.getCurrentPosition(function(position) {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
+       const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
 
-      const map = L.map('map').setView([lat, lon], 13);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(map);
+    if (mapInstance) {
+      mapInstance.remove();
+      mapInstance = null;
+    }
 
-      L.marker([lat, lon]).addTo(map).bindPopup('Você está aqui!').openPopup();
+    mapInstance = L.map('map').setView([lat, lon], 13);
+    const map = mapInstance;
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.marker([lat, lon]).addTo(map).bindPopup('Você está aqui!').openPopup();
     
       fetch(`http://localhost:8080/get_pollutitions?lat=${lat}&lon=${lon}`)
         .then(response => response.json())
@@ -498,23 +509,41 @@ function carregarMapaELocalizacao() {
           const components = data.data.list[0].components;
           const apiAQI = data.data.list[0].main.aqi;
 
+        // ===== MODO TESTE (TEMPORÁRIO) =====
+        const MODO_TESTE = false;
+
+        if (MODO_TESTE) {
+          // Valores propositalmente altos (unidades como a API retorna: µg/m³)
+          components.pm10 = 200;
+          components.pm2_5 = 100;
+          components.so2 = 300;
+          components.no2 = 500;
+          components.o3 = 170;
+          components.co = 14000; // µg/m³ (vai virar ppm e subir o índice)
+        }
+        // ===== FIM MODO TESTE =====
+
+
+          // Limpa tabela
+          document.getElementById('tabela-poluentes').innerHTML = "";
+
+          // Limpa Qualidade Geral
+          const qualidadeGeralDiv = document.getElementById('qualidade-geral');
+          qualidadeGeralDiv.innerHTML = "<h2>Qualidade Geral</h2>";
+
 
           const matrizPoluentes = Object.entries(components).map(([poluente, valor]) => {
-            let unidade = 'µg/m³';
-            if(poluente === 'co') {
-              valor = (Math.round(valor * 10) / 10) / 1145;
-              unidade = 'ppm';
-            } else {
-              valor = Math.round(valor);
-            }
+          const normalizado = normalizarValorParaCalculo(poluente, valor);
+          valor = normalizado.valor;
+          let unidade = normalizado.unidade;
 
-            const indice = calcularIndice(poluente, valor);
-            return {
-              poluente: poluente.toUpperCase().replace('_', '.'),
-              valor: indice,
-              qualidade: getQualidadePoluente(poluente, indice),
-              unidade: unidade
-            };
+          const indice = calcularIndice(poluente, valor);
+          return {
+          poluente: poluente.toUpperCase().replace('_', '.'),
+          concentracao: valor,
+          unidade: unidade,
+          qualidade: classificarPorIndice(indice)
+          };
           });
 
           const tbody = document.getElementById('tabela-poluentes');
@@ -524,7 +553,7 @@ function carregarMapaELocalizacao() {
             const tr = document.createElement('tr');
             tr.innerHTML = `
               <td>${item.poluente}</td>
-              <td>${item.valor.toFixed(2)} ${item.unidade}</td>
+              <td>${item.concentracao} ${item.unidade}</td>
               <td style="color: ${getColor(item.qualidade)}">${item.qualidade}</td>
             `;
             tbody.appendChild(tr);
@@ -533,15 +562,13 @@ function carregarMapaELocalizacao() {
           
           const iqAr = calcularIQAr(components);
                
-          const qualidadeDoArCalculo = getQualidadeDoAr(iqAr);
+          const qualidadeDoArCalculo = classificarPorIndice(iqAr);
 
           generateCircleSVG(qualidadeDoArCalculo);
            
           if(localStorage.getItem('doenca_respiratoria')){
             const doencaSelecionada = localStorage.getItem('doenca_respiratoria');
-            if(qualidadeDoArCalculo === "Muito Ruim"){
-              qualidadeDoArCalculo = "MuitoRuim";
-            }
+            
             const recomendacao = getRecomendacao(doencaSelecionada, qualidadeDoArCalculo);
 
 
@@ -559,66 +586,23 @@ function carregarMapaELocalizacao() {
     }, function(error) {
       alert('Não foi possível obter sua localização sem localização não é possível mostrar os dados de qualidade do ar.');
     });
-  }
+  }   
 
-    // Classificação simplificada
-    function getQualidadePoluente(poluente, valor) {
+    function classificarPorIndice(iq){
+      if(iq <= 40) return "Boa";
+      if(iq <= 80) return "Moderada";
+      if(iq <= 120) return "Ruim";
+      if(iq <= 200) return "Muito Ruim";
+      return "Péssima";
+    }
 
-      switch (poluente) {
-        case 'pm2_5':
-          if (valor <= 15) return "Boa";
-          if (valor <= 50) return "Moderada";
-          if (valor <= 75) return "Ruim";
-          if (valor <= 125) return "Muito Ruim";
-          return "Péssima";
-        case 'pm10':
-          if (valor <= 54) return "Boa";
-          if (valor <= 154) return "Moderada";
-          if (valor <= 254) return "Ruim";
-          if (valor <= 354) return "Muito Ruim";
-          return "Péssima";
-        case 'o3':
-          if (valor <= 100) return "Boa";
-          if (valor <= 130) return "Moderada";
-          if (valor <= 160) return "Ruim";
-          if (valor <= 200) return "Muito Ruim";
-          return "Péssima";
-        case 'no2':
-          if (valor <= 53) return "Boa";
-          if (valor <= 100) return "Moderada";
-          if (valor <= 360) return "Ruim";
-          if (valor <= 649) return "Muito Ruim";
-          return "Péssima";
-        case 'so2':
-          if (valor <= 35) return "Boa";
-          if (valor <= 75) return "Moderada";
-          if (valor <= 185) return "Ruim";
-          if (valor <= 304) return "Muito Ruim";
-          return "Péssima";
-      case 'co':
-        if (valor <= 9) return "Boa";
-        if (valor <= 11) return "Moderada";
-        if (valor <= 13) return "Ruim";
-        if (valor <= 15) return "Muito Ruim";
-        return "Péssima";
-        default:
-          return "Desconhecida";
-      }
-    }
-     function getQualidadeDoAr(iqAr) {
-     if (iqAr <= 40) return "Boa";
-     if (iqAr <= 80) return "Moderada";
-     if (iqAr <= 120) return "Ruim";
-     if (iqAr <= 200) return "Muito Ruim";
-  return "Péssima";
-    }
     function getColor(qualidade) {
       switch (qualidade) {
         case "Boa": return "green";
         case "Moderada": return "yellow";
         case "Ruim": return "orange";
         case "Muito Ruim": return "red";
-        case "Perigosa": return "darkred";
+        case "Péssima": return "darkred";
         default: return "gray";
       }
     }
@@ -629,7 +613,7 @@ function carregarMapaELocalizacao() {
         case 2: return "Razoável";
         case 3: return "Moderada";
         case 4: return "Muito Ruim";
-        case 5: return "Perigosa";
+        case 5: return "Péssima";
         default: return "Desconhecida";
       }
     }
@@ -638,16 +622,16 @@ function getRecomendacao(doenca, qualidade) {
     geral: {
       Boa: "A qualidade do ar é considerada satisfatória, atividades ao ar livre podem ser realizadas normalmente.",
       Moderada: "A qualidade do ar é considerada moderada, atividades ao ar livre podem ser realizadas normalmente.",
-      Ruim: "A qualidade do ar é considerada ruim, atividades físicas intensas ao ar ligetvre devem ser evitadas e atividades leves podem ser realizadas, mas deve-se ficar atento ao surgimento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta.",
-      MuitoRuim: "A qualidade do ar é considerada muito ruim, atividades físicas ao ar livre devem ser evitadas, e sempre que possível permaneça em ambientes fechados. É importante ficar atento ao surgimento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além da ocorrência de falta de ar ou respiração ofegante. Utilize máscaras com filtro quando estiver em contato com o ambiente externo.",
-      Perigosa: "A qualidade do ar é considerada péssima, sendo fortemente recomendado evitar qualquer exposição ao ar livre. Mantenha portas e janelas fechadas para reduzir a entrada de ar poluído e, se possível, utilize purificadores de ar. É importante observar o agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de episódios de falta de ar ou respiração ofegante. Em caso de piora é indicado procurar atendimento médico. O uso de máscaras com filtro é indicado sempre que estiver em contato com o ambiente externo."
+      Ruim: "A qualidade do ar é considerada ruim, atividades físicas intensas ao ar livre devem ser evitadas e atividades leves podem ser realizadas, mas deve-se ficar atento ao surgimento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta.",
+      "Muito Ruim": "A qualidade do ar é considerada muito ruim, atividades físicas ao ar livre devem ser evitadas, e sempre que possível permaneça em ambientes fechados. É importante ficar atento ao surgimento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além da ocorrência de falta de ar ou respiração ofegante. Utilize máscaras com filtro quando estiver em contato com o ambiente externo.",
+      "Péssima": "A qualidade do ar é considerada péssima, sendo fortemente recomendado evitar qualquer exposição ao ar livre. Mantenha portas e janelas fechadas para reduzir a entrada de ar poluído e, se possível, utilize purificadores de ar. É importante observar o agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de episódios de falta de ar ou respiração ofegante. Em caso de piora é indicado procurar atendimento médico. O uso de máscaras com filtro é indicado sempre que estiver em contato com o ambiente externo."
     },
     grupo_risco: {
       Boa: "A qualidade do ar é considerada satisfatória, atividades ao ar livre podem ser realizadas normalmente.",
       Moderada: "A qualidade do ar é moderada. Recomenda-se reduzir o esforço físico intenso ao ar livre. Pessoas sensíveis podem apresentar sintomas leves, como tosse e cansaço.",
       Ruim: "A qualidade do ar é considerada ruim, recomenda-se evitar qualquer esforço físico ao ar livre e priorizar a permanência em ambientes fechados. Utilize máscaras com filtro em áreas altamente poluídas.",
-      MuitoRuim: "A qualidade do ar é considerada muito ruim, recomenda-se evitar qualquer exposição ao ar livre e permanecer em ambientes fechados. Deve-se ficar atento ao agravamento de sintomas como como tosse seca, cansaço, ardor nos olhos, nariz e garganta, bem como episódios de falta de ar ou respiração ofegante. Em caso de piora é indicado procurar atendimento médico. Utilize máscaras com filtro quando estiver em contato com o ambiente externo.",
-      Perigosa: "A qualidade do ar é considerada péssima, sendo fortemente recomendado evitar qualquer exposição ao ar livre. Mantenha portas e janelas fechadas para reduzir a entrada de ar poluído e, se possível, utilize purificadores de ar. É importante observar o agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de episódios de falta de ar ou respiração ofegante. Em caso de piora é indicado procurar atendimento médico. O uso de máscaras com filtro é indicado sempre que estiver em contato com o ambiente externo."
+      "Muito Ruim": "A qualidade do ar é considerada muito ruim, recomenda-se evitar qualquer exposição ao ar livre e permanecer em ambientes fechados. Deve-se ficar atento ao agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, bem como episódios de falta de ar ou respiração ofegante. Em caso de piora é indicado procurar atendimento médico. Utilize máscaras com filtro quando estiver em contato com o ambiente externo.",
+      "Péssima": "A qualidade do ar é considerada péssima, sendo fortemente recomendado evitar qualquer exposição ao ar livre. Mantenha portas e janelas fechadas para reduzir a entrada de ar poluído e, se possível, utilize purificadores de ar. É importante observar o agravamento de sintomas como tosse seca, cansaço, ardor nos olhos, nariz e garganta, além de episódios de falta de ar ou respiração ofegante. Em caso de piora é indicado procurar atendimento médico. O uso de máscaras com filtro é indicado sempre que estiver em contato com o ambiente externo."
     }
   };
 
