@@ -354,7 +354,7 @@ tbody td:last-child {
   </div>
   </div>
 
- <script src="/assets/js/aqi-utils.js"></script>
+<script src="../assets/js/aqi-utils.js"></script>
 
   <script>
    const API_URL = "<?php echo getenv('API_URL'); ?>";
