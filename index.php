@@ -5,74 +5,102 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Factory\AppFactory;
 use Rafael\RespiraBem\services\ViewRender;
 use Rafael\RespiraBem\services\Pollution;
-use Rafael\RespiraBem\services\HttpClient;
 use Dotenv\Dotenv;
+use Rafael\RespiraBem\services\HttpClient;
 
-// autoload agora aponta direto para vendor (raiz)
 require __DIR__ . '/vendor/autoload.php';
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = __DIR__ . '/..' . $uri;
 
-// Se o arquivo existir (ex: /assets/js/aqi-utils.js), deixa o servidor embutido servir.
+/*
+|--------------------------------------------------------------------------
+| Permitir arquivos estáticos (assets, favicon, etc)
+|--------------------------------------------------------------------------
+*/
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$path = __DIR__ . $uri;
+
 if ($uri !== '/' && is_file($path)) {
     return false;
 }
+
+/*
+|--------------------------------------------------------------------------
+| Carregar .env (se existir)
+|--------------------------------------------------------------------------
+*/
 if (file_exists(__DIR__ . '/.env')) {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv = Dotenv::createImmutable(__DIR__);
     $dotenv->load();
 }
 
+/*
+|--------------------------------------------------------------------------
+| Criar aplicação Slim
+|--------------------------------------------------------------------------
+*/
 $app = AppFactory::create();
 
-/**
- * Rota principal
- */
+/*
+|--------------------------------------------------------------------------
+| Rota da página principal
+|--------------------------------------------------------------------------
+*/
 $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
         $html = ViewRender::render('home');
         $response->getBody()->write($html);
         return $response;
-    } catch (\Throwable $e) {
-        $response->getBody()->write(
-            'Erro ao renderizar a view: ' . $e->getMessage()
-        );
+    } catch (\Exception $e) {
+        $response->getBody()->write("Erro ao renderizar a view: " . $e->getMessage());
         return $response->withStatus(500);
     }
 });
 
-/**
- * API de poluição
- */
-$app->get('/get_pollutitions', function (
-    ServerRequestInterface $request,
-    ResponseInterface $response
-) {
-    $params = $request->getQueryParams();
+/*
+|--------------------------------------------------------------------------
+| API de poluição
+|--------------------------------------------------------------------------
+*/
+$app->get('/get_pollutitions', function (ServerRequestInterface $request, ResponseInterface $response) {
 
-    if (!isset($params['lat'], $params['lon'])) {
+    $params = $request->getQueryParams();
+    $lat = $params['lat'] ?? null;
+    $lon = $params['lon'] ?? null;
+
+    if ($lat === null || $lon === null) {
         $response->getBody()->write(json_encode([
             'success' => false,
-            'message' => 'lat e lon são obrigatórios'
+            'message' => 'Parâmetros lat e lon são obrigatórios'
         ]));
-
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withStatus(400);
     }
 
-    $pollution = new Pollution(
-        new HttpClient(),
-        $_ENV['API_KEY']
-    );
+    $pollution = new Pollution(new HttpClient(), $_ENV['API_KEY']);
+    $result = $pollution->getPollutionData($lat, $lon);
 
-    $result = $pollution->getPollutionData(
-        $params['lat'],
-        $params['lon']
-    );
+    if (!$result['success']) {
+        $response->getBody()->write(json_encode([
+            'success' => false,
+            'message' => 'Erro ao buscar dados de poluição'
+        ]));
 
-    $response->getBody()->write(json_encode($result));
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus(500);
+    }
+
+    $response->getBody()->write(json_encode([
+        'success' => true,
+        'data' => $result['data']
+    ]));
 
     return $response->withHeader('Content-Type', 'application/json');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Executar aplicação
+|--------------------------------------------------------------------------
+*/
 $app->run();
