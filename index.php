@@ -16,10 +16,12 @@ require __DIR__ . '/vendor/autoload.php';
 |--------------------------------------------------------------------------
 */
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = __DIR__ . $uri;
+$file = __DIR__ . $uri;
 
-if ($uri !== '/' && is_file($path)) {
-    return false;
+if ($uri !== '/' && file_exists($file) && !is_dir($file)) {
+    header("Content-Type: application/javascript");
+    readfile($file);
+    exit;
 }
 
 /*
