@@ -19,8 +19,11 @@ if ($uri !== '/' && is_file($path)) {
     return false;
 }
 
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
+// carrega .env apenas se existir (local)
+if (file_exists(__DIR__ . '/../.env')) {
+    $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+    $dotenv->load();
+}
 
 $app = AppFactory::create();
 
