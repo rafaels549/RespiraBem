@@ -507,8 +507,19 @@ function carregarMapaELocalizacao() {
        fetch(`${API_URL}/get_pollutitions?lat=${lat}&lon=${lon}`)
         .then(response => response.json())
         .then(data => {
-          const components = data.data.list[0].components;
+          const components = null;
+       
+
+        if(data.current) {
+
+          delete data.current.time;
+          delete data.current.interval;
+          components = data.current;
+
+        }else{
+          components = data.data.list[0].components;
           const apiAQI = data.data.list[0].main.aqi;
+          const qualidadeDoAPelaAPI = getQualidadeDoAPI(apiAQI);}
 
         // ===== MODO TESTE (TEMPORÁRIO) =====
         const MODO_TESTE = false;

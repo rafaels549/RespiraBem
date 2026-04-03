@@ -59,11 +59,22 @@ $app->get('/get_pollutitions', function (ServerRequestInterface $request, Respon
     $result = $pollution->getPollutionData($lat, $lon);
 
     if (!$result['success']) {
+        $result = $pollution->getPollutionDataOpenMeteo($lat, $lon);
+        if (!$result['success']) {
         $response->getBody()->write(json_encode([
             'success' => false,
             'message' => 'Erro ao buscar dados de poluição'
         ]));
+
         return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $result['data']
+            ]));
+
+            return $response->withHeader('Content-Type', 'application/json');
+        
     }
      
     $response->getBody()->write(json_encode([
