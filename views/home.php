@@ -507,7 +507,7 @@ function carregarMapaELocalizacao() {
        fetch(`${API_URL}/get_pollutitions?lat=${lat}&lon=${lon}`)
         .then(response => response.json())
         .then(data => {
-          const components = null;
+          let components = null;
        
 
         if(data.current) {
