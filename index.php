@@ -86,7 +86,7 @@ $app->get('/get_pollutitions', function (ServerRequestInterface $request, Respon
         if (!$result['success']) {  
         $response->getBody()->write(json_encode([
             'success' => false,
-            'message' => 'Erro ao buscar dados de poluição'
+            'message' => 'Erro ao buscar dados de poluição.'
         ]));
 
         return $response
