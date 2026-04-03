@@ -353,11 +353,11 @@ tbody td:last-child {
     </table>
   </div>
   </div>
-  
-  <script src="/assets/js/aqi-utils.js"></script>
+
+<script src="../assets/js/aqi-utils.js"></script>
 
   <script>
-  
+   const API_URL = "<?php echo getenv('API_URL'); ?>";
     document.addEventListener('DOMContentLoaded', function() {
       if(!localStorage.getItem('doenca_respiratoria')){
         document.getElementById('doenca_respiratoria_container').style.display = 'block';
@@ -503,25 +503,26 @@ function carregarMapaELocalizacao() {
 
     L.marker([lat, lon]).addTo(map).bindPopup('Você está aqui!').openPopup();
     
-      fetch(`http://localhost:8080/get_pollutitions?lat=${lat}&lon=${lon}`)
+    
+       fetch(`${API_URL}/get_pollutitions?lat=${lat}&lon=${lon}`)
         .then(response => response.json())
         .then(data => {
-          const components = data.data.list[0].components;
+          let components = null;
+       
+
+        if(data.current) {
+
+          delete data.current.time;
+          delete data.current.interval;
+          components = data.current;
+
+        }else{
+          components = data.data.list[0].components;
           const apiAQI = data.data.list[0].main.aqi;
+          const qualidadeDoAPelaAPI = getQualidadeDoAPI(apiAQI);}
 
-        // ===== MODO TESTE (TEMPORÁRIO) =====
-        const MODO_TESTE = false;
+      
 
-        if (MODO_TESTE) {
-          // Valores propositalmente altos (unidades como a API retorna: µg/m³)
-          components.pm10 = 200;
-          components.pm2_5 = 100;
-          components.so2 = 300;
-          components.no2 = 500;
-          components.o3 = 170;
-          components.co = 14000; // µg/m³ (vai virar ppm e subir o índice)
-        }
-        // ===== FIM MODO TESTE =====
 
 
           // Limpa tabela
