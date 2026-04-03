@@ -521,19 +521,8 @@ function carregarMapaELocalizacao() {
           const apiAQI = data.data.list[0].main.aqi;
           const qualidadeDoAPelaAPI = getQualidadeDoAPI(apiAQI);}
 
-        // ===== MODO TESTE (TEMPORÁRIO) =====
-        const MODO_TESTE = false;
+      
 
-        if (MODO_TESTE) {
-          // Valores propositalmente altos (unidades como a API retorna: µg/m³)
-          components.pm10 = 200;
-          components.pm2_5 = 100;
-          components.so2 = 300;
-          components.no2 = 500;
-          components.o3 = 170;
-          components.co = 14000; // µg/m³ (vai virar ppm e subir o índice)
-        }
-        // ===== FIM MODO TESTE =====
 
 
           // Limpa tabela
