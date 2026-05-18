@@ -18,7 +18,7 @@ function converterCOParaPPM(valorUgM3){
  
 function normalizarValorParaCalculo(poluente, valorUgM3) {
 
-  if (poluente === "co") {
+  if (poluente === "co" || poluente === "carbon_monoxide") {
     const ppm = converterCOParaPPM(valorUgM3);
     const ppm1Casa = Math.round(ppm * 10) / 10;
     return { valor: ppm1Casa, unidade: "ppm" };

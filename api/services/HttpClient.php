@@ -11,20 +11,22 @@ class HttpClient
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         if ($data) {
+
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
+        
         $response = curl_exec($ch);
-        if($response === false) {
+       $response =  json_decode($response, true);
+        if(isset($response["cod"]) && $response["cod"] === 401)  {
             return [
                 'error' => curl_error($ch),
                 "success" => false
             ];
         }
-        
-        curl_close($ch);
         return [
-            'data' => json_decode($response, true),
-            "success" => true
+            'data' => $response,
+            "success" => true,
+            "response" => $response
         ];
     }
 }

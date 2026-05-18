@@ -353,11 +353,11 @@ tbody td:last-child {
     </table>
   </div>
   </div>
-  
-  <script src="/assets/js/aqi-utils.js"></script>
+
+<script src="../assets/js/aqi-utils.js"></script>
 
   <script>
-  
+   const API_URL = "<?php echo getenv('API_URL'); ?>";
     document.addEventListener('DOMContentLoaded', function() {
       if(!localStorage.getItem('doenca_respiratoria')){
         document.getElementById('doenca_respiratoria_container').style.display = 'block';
@@ -503,25 +503,26 @@ function carregarMapaELocalizacao() {
 
     L.marker([lat, lon]).addTo(map).bindPopup('Você está aqui!').openPopup();
     
-      fetch(`http://localhost:8080/get_pollutitions?lat=${lat}&lon=${lon}`)
+        // retorno em html
+       fetch(`${API_URL}/get_pollutitions?lat=${lat}&lon=${lon}`)
         .then(response => response.json())
         .then(data => {
-          const components = data.data.list[0].components;
+        
+        let components = null;
+        if(data.data.current) {
+
+          delete data.data.current.time;
+          delete data.data.current.interval;
+          components = data.data.current;
+
+        }else{
+          components = data.data.list[0].components;
           const apiAQI = data.data.list[0].main.aqi;
-
-        // ===== MODO TESTE (TEMPORÁRIO) =====
-        const MODO_TESTE = false;
-
-        if (MODO_TESTE) {
-          // Valores propositalmente altos (unidades como a API retorna: µg/m³)
-          components.pm10 = 200;
-          components.pm2_5 = 100;
-          components.so2 = 300;
-          components.no2 = 500;
-          components.o3 = 170;
-          components.co = 14000; // µg/m³ (vai virar ppm e subir o índice)
+          const qualidadeDoAPelaAPI = getQualidadeDoAPI(apiAQI);
         }
-        // ===== FIM MODO TESTE =====
+
+      
+
 
 
           // Limpa tabela
@@ -531,12 +532,11 @@ function carregarMapaELocalizacao() {
           const qualidadeGeralDiv = document.getElementById('qualidade-geral');
           qualidadeGeralDiv.innerHTML = "<h2>Qualidade Geral</h2>";
 
-
           const matrizPoluentes = Object.entries(components).map(([poluente, valor]) => {
           const normalizado = normalizarValorParaCalculo(poluente, valor);
           valor = normalizado.valor;
           let unidade = normalizado.unidade;
-
+        
           const indice = calcularIndice(poluente, valor);
           return {
           poluente: poluente.toUpperCase().replace('_', '.'),
@@ -581,7 +581,7 @@ function carregarMapaELocalizacao() {
           }
         })
         .catch(error => {
-          console.error('Erro ao buscar poluentes:', error);
+          console.error('Erro ao buscar poluentes:', error , error.response);
         });
     }, function(error) {
       alert('Não foi possível obter sua localização sem localização não é possível mostrar os dados de qualidade do ar.');
